@@ -38,7 +38,7 @@ const Header = () => {
     };
 
     fetchProfile();
-  }, [user]); // Re-run when the user logs in or out
+  }, [user]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -71,6 +71,7 @@ const Header = () => {
       )}
 
       <nav className="header-nav">
+        <Link to="/dashboard/poster">My Jobs</Link>
         <Link to="/profile">My Profile</Link>
         <button onClick={handleLogout} className="secondary-link">
           Log Out

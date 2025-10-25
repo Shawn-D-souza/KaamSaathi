@@ -1,0 +1,93 @@
+.dashboard-container h1 {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.job-list-section {
+  margin-bottom: 2.5rem;
+}
+
+.job-list-section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.job-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.job-card {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  background-color: var(--color-background);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.job-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.job-card p {
+  margin: 0.25rem 0;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+}
+
+.job-card .location-coords {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.status {
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.OPEN {
+  color: #007aff;
+  background-color: var(--color-primary-light);
+}
+
+.status.BOOKED {
+  color: #ff9500;
+  background-color: #fff8f0;
+}
+
+.status.COMPLETED {
+  color: #34c759;
+  background-color: #f0fff3;
+}
+
+.status.CANCELLED {
+  color: #888;
+  background-color: #f4f4f4;
+}
+
+.button-link {
+  display: inline-block;
+  margin-top: 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.button-link:hover {
+  background-color: var(--color-primary-dark);
+  color: white;
+}
