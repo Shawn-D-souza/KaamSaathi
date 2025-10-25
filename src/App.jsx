@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import ProviderActivationPage from './pages/ProviderActivationPage';
 import PosterDashboardPage from './pages/PosterDashboardPage';
+import ViewApplicantsPage from './pages/ViewApplicantsPage';
 import './index.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/activate" element={<ProviderActivationPage />} />
         <Route path="/dashboard/poster" element={<PosterDashboardPage />} />
+        <Route path="/job/:jobId/applicants" element={<ViewApplicantsPage />} />
       </Routes>
     </div>
   );
