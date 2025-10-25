@@ -1,13 +1,10 @@
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
+import { useMode } from '../context/ModeContext'; 
 
 const HomePage = () => {
   const { user, loading } = useAuth();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
+  const { mode } = useMode();
 
   if (loading) return <h1>Loading...</h1>;
 
@@ -25,16 +22,17 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1>Welcome, {user.email}!</h1>
-      <p>What can we help you with today?</p>
-
-      <Link to="/profile" style={{ marginRight: '10px' }}>
-        My Profile
-      </Link>
-
-      <button onClick={handleLogout} className="secondary">
-        Log Out
-      </button>
+      {mode === 'posting' ? (
+        <div>
+          <h1>Find Help</h1>
+          <p>What can we help you with today?</p>
+        </div>
+      ) : (
+        <div>
+          <h1>Find Work</h1>
+          <p>You are in "Working" mode. Look for jobs!</p>
+        </div>
+      )}
     </div>
   );
 };
