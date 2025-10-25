@@ -1,6 +1,7 @@
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useMode } from '../context/ModeContext'; 
+import PostJobForm from '../components/PostJobForm';
 
 const HomePage = () => {
   const { user, loading } = useAuth();
@@ -23,10 +24,8 @@ const HomePage = () => {
   return (
     <div>
       {mode === 'posting' ? (
-        <div>
-          <h1>Find Help</h1>
-          <p>What can we help you with today?</p>
-        </div>
+        // Render the PostJobForm when in 'posting' mode
+        <PostJobForm />
       ) : (
         <div>
           <h1>Find Work</h1>

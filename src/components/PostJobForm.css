@@ -1,0 +1,35 @@
+.post-job-container {
+  padding: 1.5rem;
+  background-color: var(--color-primary-light);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.post-job-container h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.post-job-form {
+  margin-top: 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-group-half {
+  flex: 1;
+}
+
+.location-info {
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 10px;
+  background-color: var(--color-background);
+  border-radius: 6px;
+  margin-top: 0;
+}
