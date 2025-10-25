@@ -15,11 +15,12 @@ const ProfilePage = () => {
 
       try {
         setLoading(true);
+        // Add a timestamp to bust cache when user updates profile
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .single(); 
 
         if (error) throw error;
 
@@ -32,7 +33,29 @@ const ProfilePage = () => {
     };
 
     fetchProfile();
-  }, [user]);
+  }, [user]); // Re-fetch when user object changes (though id won't)
+
+  // A simple function to force re-fetch after activation
+  const refreshProfile = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single(); 
+
+    if (error) setError(error.message);
+    else setProfile(data);
+    setLoading(false);
+  };
+  
+  useEffect(() => {
+    window.addEventListener('focus', refreshProfile);
+    return () => {
+      window.removeEventListener('focus', refreshProfile);
+    };
+  }, [user.id]);
+
 
   if (loading) {
     return <div>Loading profile...</div>;
@@ -61,17 +84,38 @@ const ProfilePage = () => {
       {profile.is_provider ? (
         <div>
           <h2>Provider Dashboard</h2>
+          
+          {profile.avatar_url && (
+            <img
+              src={profile.avatar_url}
+              alt="Avatar"
+              style={{
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                marginBottom: '10px'
+              }}
+            />
+          )}
+          
           <p>
             <strong>Bio:</strong> {profile.bio || 'Not set'}
           </p>
-          {/* We will display the avatar image here in Task 5 */}
         </div>
       ) : (
         <div>
           <h2>Become a Provider</h2>
           <p>You are not a provider yet. Activate your provider profile to start working.</p>
-          {/* This Link will point to the activation form in Task 5 */}
-          <Link to="/profile/activate" className="button">
+          <Link to="/profile/activate" className="button" style={{ 
+            display: 'inline-block',
+            marginTop: '10px',
+            backgroundColor: 'var(--color-primary)', 
+            color: 'white', 
+            padding: '10px 15px', 
+            textDecoration: 'none', 
+            borderRadius: '6px'
+          }}>
             Become a Provider
           </Link>
         </div>

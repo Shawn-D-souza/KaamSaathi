@@ -27,6 +27,11 @@ const HomePage = () => {
     <div>
       <h1>Welcome, {user.email}!</h1>
       <p>What can we help you with today?</p>
+
+      <Link to="/profile" style={{ marginRight: '10px' }}>
+        My Profile
+      </Link>
+
       <button onClick={handleLogout} className="secondary">
         Log Out
       </button>
