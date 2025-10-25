@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
@@ -11,6 +11,7 @@ const ViewApplicantsPage = () => {
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookingLoading, setBookingLoading] = useState(null); 
 
   useEffect(() => {
     const fetchJobAndApplicants = async () => {
@@ -20,7 +21,6 @@ const ViewApplicantsPage = () => {
 
       try {
         // 1. Fetch the job details
-        // We also check poster_id for security, ensuring this user posted the job.
         const { data: jobData, error: jobError } = await supabase
           .from('jobs')
           .select('*')
@@ -33,25 +33,18 @@ const ViewApplicantsPage = () => {
         setJob(jobData);
 
         // 2. Fetch applicants for this job
-        // This query "joins" applications with profiles based on your schema
         const { data: appData, error: appError } = await supabase
           .from('applications')
           .select(
             `
-            id,
-            provider_id,
             profiles ( id, username, bio, avatar_url )
-          `
+            `
           )
           .eq('job_id', jobId);
 
         if (appError) throw new Error(`Applicants fetch error: ${appError.message}`);
         
-        // Supabase returns profiles nested, so we flatten it for easier use
-        const formattedApplicants = appData.map(app => ({
-          application_id: app.id,
-          ...app.profiles
-        }));
+        const formattedApplicants = appData.map(app => app.profiles);
 
         setApplicants(formattedApplicants);
 
@@ -64,6 +57,7 @@ const ViewApplicantsPage = () => {
 
     fetchJobAndApplicants();
   }, [jobId, user]);
+
 
   if (loading) return <div>Loading applicants...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -90,6 +84,9 @@ const ViewApplicantsPage = () => {
                 key={applicant.id} 
                 applicant={applicant}
                 job={job}
+                setJob={setJob}
+                bookingLoading={bookingLoading === applicant.id}
+                setBookingLoading={setBookingLoading}
               />
             ))}
           </div>
@@ -101,13 +98,48 @@ const ViewApplicantsPage = () => {
   );
 };
 
-// A sub-component for displaying a single applicant
-const ApplicantCard = ({ applicant, job }) => {
+const ApplicantCard = ({ applicant, job, setJob, bookingLoading, setBookingLoading }) => {
+  const navigate = useNavigate();
+
+  const handleBook = async () => {
+    // 1. Confirm the action
+    if (!window.confirm(`Are you sure you want to book ${applicant.username}? This job will be assigned to them.`)) {
+      return;
+    }
+
+    setBookingLoading(applicant.id); // Set loading state for this specific card
+    try {
+      // 2. Update the job in Supabase
+      const { data, error } = await supabase
+        .from('jobs')
+        .update({
+          status: 'BOOKED',
+          booked_provider_id: applicant.id, // 'applicant.id' is the provider's ID from profiles
+        })
+        .eq('id', job.id)
+        .select() // Ask Supabase to return the updated row
+        .single();
+
+      if (error) throw error;
+
+      // 3. Update the local job state to instantly refresh the UI
+      setJob(data); 
+
+      // Optional: uncomment this line to redirect after booking
+      // navigate('/dashboard/poster');
+
+    } catch (error) {
+      alert(`Error booking provider: ${error.message}`);
+    } finally {
+      setBookingLoading(null); // Clear loading state
+    }
+  };
+
   return (
     <div className="job-card applicant-card">
       <div className="applicant-header">
         <img 
-          src={applicant.avatar_url || 'https://i.imgur.com/S8Wf2yF.png'} // A generic placeholder
+          src={applicant.avatar_url || 'https://i.imgur.com/S8Wf2yF.png'} 
           alt={`${applicant.username}'s avatar`}
           className="applicant-avatar"
         />
@@ -118,9 +150,19 @@ const ApplicantCard = ({ applicant, job }) => {
       <p><strong>Bio:</strong> {applicant.bio || 'No bio provided.'}</p>
       
       {job.status === 'OPEN' && (
-        <button className="button-link" style={{border: 'none'}}>
-          Book {applicant.username}
+        <button 
+          onClick={handleBook}
+          disabled={bookingLoading}
+          className="button-link" 
+          style={{border: 'none', cursor: 'pointer'}}
+        >
+          {bookingLoading ? 'Booking...' : `Book ${applicant.username}`}
         </button>
+      )}
+
+      {/* Show a clear "Booked" status on the card of the chosen provider */}
+      {job.status === 'BOOKED' && job.booked_provider_id === applicant.id && (
+         <p className="status BOOKED" style={{marginTop: '1rem'}}>✅ BOOKED</p>
       )}
     </div>
   );
