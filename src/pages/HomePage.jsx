@@ -1,5 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../supabaseClient';
+import { Link } from 'react-router-dom';
 
 const HomePage = () => {
   const { user, loading } = useAuth();
@@ -14,9 +15,9 @@ const HomePage = () => {
     return (
       <div>
         <h1>Welcome to KaamSaathi!</h1>
-        <p>You are not logged in.</p>
+        <p>Your one-stop solution for local help.</p>
         <p>
-          <a href="/login">Log In</a> or <a href="/signup">Sign Up</a>
+          <Link to="/login">Log In</Link> or <Link to="/signup">Sign Up</Link>
         </p>
       </div>
     );
@@ -25,8 +26,10 @@ const HomePage = () => {
   return (
     <div>
       <h1>Welcome, {user.email}!</h1>
-      <p>You are logged in.</p>
-      <button onClick={handleLogout}>Log Out</button>
+      <p>What can we help you with today?</p>
+      <button onClick={handleLogout} className="secondary">
+        Log Out
+      </button>
     </div>
   );
 };

@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    setIsError(false);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
@@ -22,18 +24,18 @@ const LoginPage = () => {
     setLoading(false);
     if (error) {
       setMessage(`Error: ${error.message}`);
+      setIsError(true);
     } else if (data.session) {
-      // Login successful!
-      navigate('/'); // Redirect to the homepage
+      navigate('/');
     }
   };
 
   return (
     <div>
-      <h1>Log In to KaamSaathi</h1>
+      <h1>Log In</h1>
       <form onSubmit={handleLogin}>
         <label>
-          Email:
+          Email
           <input
             type="email"
             value={email}
@@ -41,9 +43,8 @@ const LoginPage = () => {
             required
           />
         </label>
-        <br />
         <label>
-          Password:
+          Password
           <input
             type="password"
             value={password}
@@ -51,14 +52,17 @@ const LoginPage = () => {
             required
           />
         </label>
-        <br />
         <button type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Log In'}
         </button>
       </form>
-      {message && <p>{message}</p>}
+
+      {message && (
+        <p className={`message ${isError ? 'error' : ''}`}>{message}</p>
+      )}
+
       <p>
-        Don't have an account? <a href="/signup">Sign Up</a>
+        Don't have an account? <Link to="/signup">Sign Up</Link>
       </p>
     </div>
   );
